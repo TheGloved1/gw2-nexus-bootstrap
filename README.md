@@ -7,6 +7,20 @@ Single-file, no hardcoded paths, auto-downloads missing components, preserves St
 > Ported from the Universal-Blue guide: https://universal-blue.discourse.group/t/a-guide-to-addons-for-guild-wars-2-on-linux/8942  
 > TaimiHUD renders *inside* GW2 via Nexus, no external overlay/window-rule needed. Works in `gamescope` and on Wayland.
 
+## Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Detailed Setup](#detailed-setup)
+  - [1. Place Script](#1-place-script)
+  - [2. Steam Launch Options](#2-steam-launch-options)
+  - [3. First Run - Auto-Downloads](#3-first-run---auto-downloads)
+  - [4. In-Game - Nexus + TaimiHUD](#4-in-game---nexus--taimihud)
+- [Uninstall](#5-uninstall)
+- [Scripts](#6-scripts)
+- [Credits](#7-credits)
+
 ## Features
 
 * **Portable** - detects `GW2DIR` from script location (`SCRIPT_DIR`) or parses `GAMEDIR` from Steam `%command%` `waitforexitandrun` (guide method). No `/home/...` hardcoded.
