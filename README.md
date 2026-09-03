@@ -108,10 +108,9 @@ cp ~/Downloads/tw_ALL_IN_ONE.taco "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_O
 
 ### 4. In-Game - Nexus + TaimiHUD
 
-1. Launch GW2 - accept Nexus legal popup `CTRL+O` is Nexus.
-2. `CTRL+O` -> `Library` -> Install `ArcDPS` (`ALT+SHIFT+T` opens ArcDPS) and `TaimiHUD`.
-3. `TaimiHUD` -> `Data Sources` tab - `Tekkit's All-In-One` should show as installed (we pre-placed file). If not, `Add` URL `https://www.tekkitsworkshop.net/download?download=1:tw-all-in-one` or `Import .taco`.
-4. `TaimiHUD` -> `Pathing` enable `Tekkit's Guides` categories. Also `Teh's Trails` available via `Data Sources` -> `Teh's Trails - Map Completion` `https://github.com/xrandox/TehsTrails/raw/main/TehsTrails/TehsTrails.taco` (speedrun 5k markers, lighter than Tekkit 49k).
+1. Launch GW2 - accept Nexus legal popup and open the Nexus Library to install `ArcDPS` and `TaimiHUD`.
+2. `TaimiHUD` -> `Data Sources` tab - `Tekkit's All-In-One` should show as installed (we pre-placed file). If not, `Add` URL `https://www.tekkitsworkshop.net/download?download=1:tw-all-in-one` or `Import .taco`.
+3. `TaimiHUD` -> `Pathing` enable `Tekkit's Guides` categories. Also `Teh's Trails` available via `Data Sources` -> `Teh's Trails - Map Completion` `https://github.com/xrandox/TehsTrails/raw/main/TehsTrails/TehsTrails.taco` (speedrun 5k markers, lighter than Tekkit 49k).
 
 TaimiHUD settings live in `addons/Taimi/settings.json` and `sources.toml` (pre-filled with `ReActif`, `LadyElyssa`, `Teh's`).
 
