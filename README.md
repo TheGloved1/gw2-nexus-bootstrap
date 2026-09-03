@@ -11,6 +11,7 @@ Single-file, no hardcoded paths, auto-downloads missing components, preserves St
 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
+- [Easy Install](#easy-install)
 - [Quick Start](#quick-start)
 - [Detailed Setup](#detailed-setup)
   - [1. Place Script](#1-place-script)
@@ -35,10 +36,26 @@ Single-file, no hardcoded paths, auto-downloads missing components, preserves St
 * `curl` or `wget` + `file` + `stat` + `realpath` (all present on Bazzite/Cachy/niri).
 * No `ScopeBuddy` required (optional - guide uses `scb -- %command%` for ArcDPS `yad` updater; Nexus now handles ArcDPS via in-game Library).
 
+## Easy Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh
+# - auto-searches Steam libraryfolders.vdf for Guild Wars 2/Gw2-64.exe
+# - prompts for path if not found (e.g. custom library)
+# - downloads gw2-nexus.sh to that folder, chmod +x, dry-runs Nexus/Tekkit
+# at the end prints the exact Launch Options to paste:
+#   "/path/to/Guild Wars 2/gw2-nexus.sh" %command%
+
+# With manual path or piped + args:
+curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh -s -- --gw2-dir "/mnt/steamlib/steamapps/common/Guild Wars 2"
+# or wget:
+wget -qO- https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh
+```
+
 ## Quick Start
 
 ```bash
-# 1. Grab the script
+# 1. Grab the script (alternative to Easy Install)
 wget -O gw2-nexus.sh https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/gw2-nexus.sh
 # or git clone
 git clone https://github.com/TheGloved1/gw2-nexus-bootstrap.git
