@@ -114,14 +114,7 @@ cp ~/Downloads/tw_ALL_IN_ONE.taco "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_O
 
 TaimiHUD settings live in `addons/Taimi/settings.json` and `sources.toml` (pre-filled with `ReActif`, `LadyElyssa`, `Teh's`).
 
-### 5. Troubleshooting
-
-* **Log:** `tail -f "Guild Wars 2/gw2-nexus.log"` and `addons/Nexus/Nexus.log` (`TaimiHUD` `Failed to get Wayland objects` was `gamescope` + `niri` conflict - we removed gamescope).
-* **Tekkit 403:** Expected on TaimiHUD auto-update - manual `tw_ALL_IN_ONE.taco` in `addons/Taimi/pathing/` suppresses it.
-* **GW2 stops after launcher:** Was `CMD_STR="$*"` + `eval` splitting `Guild Wars 2` space -> fixed to `"$@"`; also `gamescope -W` inside `niri` Wayland caused `Failed to get Wayland objects` -> remove gamescope prefix.
-* **Nexus not loading:** Ensure `d3d11.dll` 7.3M `file d3d11.dll | grep PE32` and `Gw2-64.exe` sibling. Protontricks optional: `d3dcompiler_43/47` via `winetricks`.
-
-### 6. Uninstall
+### 5. Uninstall
 
 ```bash
 rm "Guild Wars 2/d3d11.dll" "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.taco"
@@ -129,11 +122,11 @@ rm "Guild Wars 2/d3d11.dll" "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.tac
 # Steam -> Properties -> Launch Options -> clear
 ```
 
-### 7. Scripts
+### 6. Scripts
 
 * `gw2-nexus.sh` - this bootstrap (Nexus + Tekkit, portable, TaimiHUD)
 
-### 8. Credits
+### 7. Credits
 
 * Guide: HikariKnight Universal-Blue https://universal-blue.discourse.group/t/a-guide-to-addons-for-guild-wars-2-on-linux/8942
 * Nexus: Raidcore https://raidcore.gg/Nexus https://github.com/RaidcoreGG/Nexus/releases/latest/download/d3d11.dll
