@@ -113,6 +113,41 @@ prompt_manual() {
   return 0
 }
 
+ask_close_steam() {
+  local ans
+  if [ -t 0 ]; then
+    printf "Close Steam and update Launch Options (Y/n): "
+    read -r ans || ans=""
+  elif [ -e /dev/tty ]; then
+    printf "Close Steam and update Launch Options (Y/n): " > /dev/tty
+    read -r ans < /dev/tty || ans=""
+  else
+    return 1
+  fi
+  case "${ans:-Y}" in
+    [Yy]*) return 0 ;;
+    [Nn]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+try_close_steam() {
+  pgrep -x steam >/dev/null 2>&1 || return 0
+  if ! ask_close_steam; then
+    return 1
+  fi
+  log "Closing Steam (steam -shutdown)..."
+  steam -shutdown >/dev/null 2>&1 || true
+  for i in $(seq 1 30); do
+    pgrep -x steam >/dev/null 2>&1 || { log "Steam closed."; return 0; }
+    sleep 1
+  done
+  err "Steam still running after 30s. Skipping auto-edit."
+  log "Please close Steam manually and re-run:"
+  log "  curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh"
+  return 1
+}
+
 # --- Resolve GW2 dir ---
 if [ -n "$GW2_DIR" ]; then
   log "Using --gw2-dir: $GW2_DIR"
@@ -159,10 +194,7 @@ if [ "$DO_UNINSTALL" = "1" ]; then
     rmdir "$GW2_DIR/addons/Taimi" 2>/dev/null || true
   fi
   # Clear Steam LaunchOptions for 1284210
-  if pgrep -x steam >/dev/null 2>&1; then
-    log "Steam is running - cannot auto-clear LaunchOptions while running."
-    log "Please clear manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> clear"
-  else
+  if try_close_steam; then
     for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
       [ -f "$lc" ] || continue
       if grep -q '"1284210"' "$lc" 2>/dev/null; then
@@ -180,6 +212,8 @@ PY
         fi
       fi
     done
+  else
+    log "Skipped auto-clear - please clear manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> clear"
   fi
   log "Uninstall complete."
   log "You may also want to: rm -rf \"$GW2_DIR/addons\" (removes all Nexus addons)"
@@ -239,17 +273,13 @@ log "Then launch GW2 once. Logs: tail -f \"$GW2_DIR/gw2-nexus.log\""
 log "In-game: Nexus Library (open via Nexus UI) -> install ArcDPS + TaimiHUD"
 log "========================================"
 
-# Also try to update Steam localconfig.vdf automatically if Steam not running (best-effort)
-LOCALCONFIG="$HOME/.local/share/Steam/userdata"/*/config/localconfig.vdf 2>/dev/null | head -1
-if pgrep -x steam >/dev/null 2>&1; then
-  log "Steam is running - set Launch Options manually in Steam UI (auto-edit skipped while running)."
-else
+# Also try to update Steam localconfig.vdf automatically (with prompt)
+if try_close_steam; then
   for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
     [ -f "$lc" ] || continue
     if grep -q "1284210" "$lc" 2>/dev/null; then
-      # Backup and try to set LaunchOptions if empty
       if grep -A2 '"1284210"' "$lc" | grep -q 'LaunchOptions.*""'; then
-        log "Steam not running, auto-setting LaunchOptions in $lc (backup: $lc.bak)"
+        log "Auto-setting LaunchOptions in $lc (backup: $lc.bak)"
         cp "$lc" "$lc.bak" 2>/dev/null || true
         python3 - "$lc" "$LAUNCH" << 'PY' 2>/dev/null || true
 import sys, re
@@ -263,4 +293,7 @@ PY
       fi
     fi
   done
+else
+  log "Skipped auto-set - please set manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options"
+  log "  $LAUNCH"
 fi
