@@ -194,7 +194,8 @@ if [ "$DO_UNINSTALL" = "1" ]; then
     for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
       [ -f "$lc" ] || continue
       if grep -q '"1284210"' "$lc" 2>/dev/null && grep -A2 '"1284210"' "$lc" | grep -q 'gw2-nexus.sh'; then
-        vlog "Clearing LaunchOptions in $lc"
+        log "Clearing Launch Options..."
+        vlog "  $lc"
         cp "$lc" "$lc.bak" 2>/dev/null || true
         python3 - "$lc" << 'PY' 2>/dev/null || vlog "  failed to edit $lc"
 import sys, re
@@ -203,6 +204,7 @@ with open(path) as f: d=f.read()
 d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)"[^"]*gw2-nexus\.sh[^"]*"', r'\1""', d, flags=re.S)
 open(path,'w').write(d)
 PY
+        log "Launch Options cleared!"
       fi
     done
     try_restart_steam || true
@@ -238,20 +240,13 @@ fi
 log "Addons ready."
 
 LAUNCH="\"$DEST\" %command%"
-log ""
-log "All done!"
-log "To finish, set your Steam Launch Options to:"
-log ""
-log "  $LAUNCH"
-log ""
-log "Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> paste it"
-log "Then start Guild Wars 2. In-game, open Nexus to install ArcDPS and TaimiHUD."
-log ""
 
 if try_close_steam; then
+  UPDATED=0
   for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
     [ -f "$lc" ] || continue
     if grep -q "1284210" "$lc" 2>/dev/null && grep -A2 '"1284210"' "$lc" | grep -q 'LaunchOptions.*""'; then
+      log "Updating Launch Options..."
       vlog "Auto-setting LaunchOptions in $lc"
       cp "$lc" "$lc.bak" 2>/dev/null || true
       python3 - "$lc" "$LAUNCH" << 'PY' 2>/dev/null || true
@@ -261,11 +256,26 @@ with open(path) as f: d=f.read()
 d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)""', r'\1"'+launch.replace('\\','\\\\').replace('"','\\"')+'"', d, flags=re.S)
 open(path,'w').write(d)
 PY
-      log "Launch Options set automatically!"
+      log "Launch Options updated!"
+      UPDATED=1
       break
     fi
   done
+  # If LaunchOptions already set, still show success
+  if [ "$UPDATED" = "0" ]; then
+    vlog "LaunchOptions already set or not found empty"
+  fi
   try_restart_steam || true
+  log ""
+  log "All done! Launch Options set automatically."
+  log "Start Guild Wars 2. In-game, open Nexus to install ArcDPS and TaimiHUD."
 else
-  log "Skipped auto-setting - please paste the Launch Options above manually."
+  log ""
+  log "All done!"
+  log "To finish, set your Steam Launch Options to:"
+  log ""
+  log "  $LAUNCH"
+  log ""
+  log "Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> paste it"
+  log "Then start Guild Wars 2. In-game, open Nexus to install ArcDPS and TaimiHUD."
 fi
