@@ -31,6 +31,8 @@ curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main
 
 Set that string in **Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options**, launch once.
 
+> **Note:** The auto-installer (`install.sh` `curl | sh`) only supports Guild Wars 2 installed through Steam (it searches `libraryfolders.vdf`). For other launchers (Lutris, Bottles, Heroic, Wine, standalone) use **Manual Install** below - the `gw2-nexus.sh` bootstrap itself works in any install when placed next to `Gw2-64.exe`.
+
 ## Manual Install
 
 ```bash
