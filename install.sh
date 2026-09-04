@@ -105,10 +105,10 @@ prompt_manual() {
 ask_close_steam() {
   local ans
   if [ -t 0 ]; then
-    printf "Close Steam and update Launch Options (Y/n): "
+    printf "Close Steam and auto-update Launch Options (Y/n): "
     read -r ans || ans=""
   elif [ -e /dev/tty ]; then
-    printf "Close Steam and update Launch Options (Y/n): " > /dev/tty
+    printf "Close Steam and auto-update Launch Options (Y/n): " > /dev/tty
     read -r ans < /dev/tty || ans=""
   else
     return 1
