@@ -15,6 +15,7 @@ Single-file, no hardcoded paths, auto-downloads missing components, preserves St
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh
+# verbose logs: curl -fsSL .../install.sh | sh -s -- --verbose
 ```
 Auto-searches Steam `libraryfolders.vdf` for `Guild Wars 2/Gw2-64.exe`, prompts for path if not found, downloads `gw2-nexus.sh` to that folder, `chmod +x`, then prints the exact Launch Options to paste:
 
@@ -25,6 +26,7 @@ Auto-searches Steam `libraryfolders.vdf` for `Guild Wars 2/Gw2-64.exe`, prompts 
 With manual path:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh -s -- --gw2-dir "/mnt/steamlib/steamapps/common/Guild Wars 2"
+# verbose: sh -s -- --verbose --gw2-dir "/path"
 ```
 
 Set that string in **Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options**, launch once.
