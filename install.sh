@@ -9,6 +9,7 @@ RAW_URL="${GW2_BOOTSTRAP_RAW_URL:-https://raw.githubusercontent.com/TheGloved1/g
 GW2_DIR=""
 MANUAL_PATH=""
 DO_UNINSTALL=""
+STEAM_WAS_OPEN=0
 
 log() { printf '[%s] %s\n' "$(date '+%H:%M:%S')" "$*"; }
 err() { printf '[%s] ERROR: %s\n' "$(date '+%H:%M:%S')" "$*" >&2; }
@@ -133,19 +134,43 @@ ask_close_steam() {
 
 try_close_steam() {
   pgrep -x steam >/dev/null 2>&1 || return 0
+  STEAM_WAS_OPEN=1
   if ! ask_close_steam; then
     return 1
   fi
   log "Closing Steam (steam -shutdown)..."
   steam -shutdown >/dev/null 2>&1 || true
-  for i in $(seq 1 30); do
-    pgrep -x steam >/dev/null 2>&1 || { log "Steam closed."; return 0; }
-    sleep 1
+  # Poll every 0.5s, return ~1s after Steam is gone (instead of fixed 30s)
+  for i in $(seq 1 60); do
+    if ! pgrep -x steam >/dev/null 2>&1; then
+      sleep 1
+      if ! pgrep -x steam >/dev/null 2>&1; then
+        log "Steam closed."
+        return 0
+      fi
+    fi
+    sleep 0.5
   done
   err "Steam still running after 30s. Skipping auto-edit."
   log "Please close Steam manually and re-run:"
   log "  curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh"
   return 1
+}
+
+try_restart_steam() {
+  if [ "$STEAM_WAS_OPEN" = "1" ]; then
+    if pgrep -x steam >/dev/null 2>&1; then
+      return 0
+    fi
+    log "Restarting Steam..."
+    nohup steam >/dev/null 2>&1 &
+    # Poll until Steam is back (up to 10s)
+    for i in $(seq 1 20); do
+      pgrep -x steam >/dev/null 2>&1 && { log "Steam restarted."; return 0; }
+      sleep 0.5
+    done
+    log "Steam restart issued (check manually if needed)."
+  fi
 }
 
 # --- Resolve GW2 dir ---
@@ -212,6 +237,7 @@ PY
         fi
       fi
     done
+    try_restart_steam || true
   else
     log "Skipped auto-clear - please clear manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> clear"
   fi
@@ -293,6 +319,7 @@ PY
       fi
     fi
   done
+  try_restart_steam || true
 else
   log "Skipped auto-set - please set manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options"
   log "  $LAUNCH"
