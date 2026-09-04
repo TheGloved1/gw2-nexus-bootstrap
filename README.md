@@ -44,9 +44,14 @@ In-game: open Nexus Library to install `ArcDPS` and `TaimiHUD`, then `TaimiHUD -
 ## Uninstall
 
 ```bash
-rm "Guild Wars 2/d3d11.dll" "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.taco"
+# Via installer (auto-searches, clears Steam LaunchOptions if Steam not running):
+curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh -s -- --uninstall
+# or with manual path:
+./install.sh --uninstall --gw2-dir "/path/to/Guild Wars 2"
+# or manual:
+rm "Guild Wars 2/d3d11.dll" "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.taco" "Guild Wars 2/gw2-nexus.sh" "Guild Wars 2/gw2-nexus.log"
 # or full: rm -rf Guild Wars 2/addons
-# Steam -> Properties -> Launch Options -> clear
+# Steam -> Properties -> Launch Options -> clear (auto-cleared if Steam not running)
 ```
 
 ## Credits

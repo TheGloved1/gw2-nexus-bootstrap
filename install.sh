@@ -8,6 +8,7 @@ set -e
 RAW_URL="${GW2_BOOTSTRAP_RAW_URL:-https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/gw2-nexus.sh}"
 GW2_DIR=""
 MANUAL_PATH=""
+DO_UNINSTALL=""
 
 log() { printf '[%s] %s\n' "$(date '+%H:%M:%S')" "$*"; }
 err() { printf '[%s] ERROR: %s\n' "$(date '+%H:%M:%S')" "$*" >&2; }
@@ -19,7 +20,15 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --gw2-dir) GW2_DIR="$2"; shift 2;;
     --raw-url) RAW_URL="$2"; shift 2;;
-    -h|--help) echo "Usage: $0 [--gw2-dir PATH]"; exit 0;;
+    --uninstall|--remove|--clean) DO_UNINSTALL=1; shift;;
+    -h|--help)
+      echo "Usage: $0 [--gw2-dir PATH] [--uninstall]"
+      echo "  --gw2-dir PATH   GW2 install path (auto-searched if omitted)"
+      echo "  --uninstall      Remove bootstrap files and clear Steam Launch Options"
+      echo "  curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh"
+      echo "  curl -fsSL .../install.sh | sh -s -- --uninstall"
+      echo "  curl -fsSL .../install.sh | sh -s -- --uninstall --gw2-dir \"/path/to/Guild Wars 2\""
+      exit 0;;
     *) shift;;
   esac
 done
@@ -132,6 +141,50 @@ fi
 
 GW2_DIR="$(realpath "$GW2_DIR" 2>/dev/null || echo "$GW2_DIR")"
 log "GW2 directory: $GW2_DIR"
+
+# --- Uninstall ---
+if [ "$DO_UNINSTALL" = "1" ]; then
+  log "Uninstalling bootstrap..."
+  for f in "$GW2_DIR/gw2-nexus.sh" "$GW2_DIR/d3d11.dll" "$GW2_DIR/addons/Taimi/pathing/tw_ALL_IN_ONE.taco" "$GW2_DIR/gw2-nexus.log" "$GW2_DIR/gw2-nexus.log.bak"; do
+    if [ -e "$f" ]; then
+      log "Removing $f"
+      rm -f "$f" 2>&1 | sed 's/^/  /' || log "  rm failed: $f"
+    else
+      log "Skip (not found): $f"
+    fi
+  done
+  # Optional: remove empty addons/Taimi/pathing if only our file was there
+  if [ -d "$GW2_DIR/addons/Taimi/pathing" ]; then
+    rmdir "$GW2_DIR/addons/Taimi/pathing" 2>/dev/null || true
+    rmdir "$GW2_DIR/addons/Taimi" 2>/dev/null || true
+  fi
+  # Clear Steam LaunchOptions for 1284210
+  if pgrep -x steam >/dev/null 2>&1; then
+    log "Steam is running - cannot auto-clear LaunchOptions while running."
+    log "Please clear manually: Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options -> clear"
+  else
+    for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
+      [ -f "$lc" ] || continue
+      if grep -q '"1284210"' "$lc" 2>/dev/null; then
+        if grep -A2 '"1284210"' "$lc" | grep -q 'gw2-nexus.sh'; then
+          log "Clearing LaunchOptions in $lc"
+          cp "$lc" "$lc.bak" 2>/dev/null || true
+          python3 - "$lc" << 'PY' 2>/dev/null || log "  failed to edit $lc"
+import sys, re
+path=sys.argv[1]
+with open(path) as f: d=f.read()
+# Clear LaunchOptions that contains gw2-nexus.sh for 1284210 block
+d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)"[^"]*gw2-nexus\.sh[^"]*"', r'\1""', d, flags=re.S)
+open(path,'w').write(d)
+PY
+        fi
+      fi
+    done
+  fi
+  log "Uninstall complete."
+  log "You may also want to: rm -rf \"$GW2_DIR/addons\" (removes all Nexus addons)"
+  exit 0
+fi
 
 # --- Download bootstrap ---
 DEST="$GW2_DIR/gw2-nexus.sh"
