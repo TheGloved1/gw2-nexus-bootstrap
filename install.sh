@@ -242,34 +242,23 @@ log "Addons ready."
 LAUNCH="\"$DEST\" %command%"
 
 if try_close_steam; then
-  UPDATED=0
   for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
     [ -f "$lc" ] || continue
-    if grep -q "1284210" "$lc" 2>/dev/null; then
-      # Update if LaunchOptions is empty OR already points to old gw2-nexus.sh location (moved game)
-      if grep -A10 '"1284210"' "$lc" | grep -q 'LaunchOptions.*""' || grep -A10 '"1284210"' "$lc" | grep -q 'gw2-nexus\.sh'; then
-        log "Updating Launch Options..."
-        vlog "Auto-setting LaunchOptions in $lc"
-        cp "$lc" "$lc.bak" 2>/dev/null || true
-        python3 - "$lc" "$LAUNCH" << 'PY' 2>/dev/null || true
+    if grep -q '"1284210"' "$lc" 2>/dev/null; then
+      log "Updating Launch Options..."
+      vlog "  $lc"
+      cp "$lc" "$lc.bak" 2>/dev/null || true
+      python3 - "$lc" "$LAUNCH" << 'PY' 2>/dev/null || true
 import sys, re
 path, launch = sys.argv[1], sys.argv[2]
 with open(path) as f: d=f.read()
-# Update existing gw2-nexus.sh path (moved install) or set if empty
-d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)"(?:[^"\\]|\\.)*gw2-nexus\.sh(?:[^"\\]|\\.)*"', r'\1"'+launch.replace('\\','\\\\').replace('"','\\"')+'"', d, flags=re.S)
-d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)""', r'\1"'+launch.replace('\\','\\\\').replace('"','\\"')+'"', d, flags=re.S)
+d=re.sub(r'("1284210"\s*\{[^}]*"LaunchOptions"\s*)"(?:[^"\\]|\\.)*"', r'\1"'+launch.replace('\\','\\\\').replace('"','\\"')+'"', d, flags=re.S)
 open(path,'w').write(d)
 PY
-        log "Launch Options updated!"
-        UPDATED=1
-        break
-      fi
+      log "Launch Options updated!"
+      break
     fi
   done
-  if [ "$UPDATED" = "0" ]; then
-    vlog "LaunchOptions already set to non-bootstrap value or not found - leaving as-is"
-    log "Launch Options already set - leaving as-is."
-  fi
   try_restart_steam || true
   log ""
   log "All done! Launch Options set automatically."
