@@ -193,7 +193,7 @@ if [ "$DO_UNINSTALL" = "1" ]; then
   if try_close_steam; then
     for lc in $HOME/.local/share/Steam/userdata/*/config/localconfig.vdf; do
       [ -f "$lc" ] || continue
-      if grep -q '"1284210"' "$lc" 2>/dev/null && grep -A2 '"1284210"' "$lc" | grep -q 'gw2-nexus.sh'; then
+      if grep -q '"1284210"' "$lc" 2>/dev/null && grep -A10 '"1284210"' "$lc" | grep -q 'gw2-nexus.sh'; then
         log "Clearing Launch Options..."
         vlog "  $lc"
         cp "$lc" "$lc.bak" 2>/dev/null || true
@@ -247,7 +247,7 @@ if try_close_steam; then
     [ -f "$lc" ] || continue
     if grep -q "1284210" "$lc" 2>/dev/null; then
       # Update if LaunchOptions is empty OR already points to old gw2-nexus.sh location (moved game)
-      if grep -A2 '"1284210"' "$lc" | grep -q 'LaunchOptions.*""' || grep -A2 '"1284210"' "$lc" | grep -q 'gw2-nexus\.sh'; then
+      if grep -A10 '"1284210"' "$lc" | grep -q 'LaunchOptions.*""' || grep -A10 '"1284210"' "$lc" | grep -q 'gw2-nexus\.sh'; then
         log "Updating Launch Options..."
         vlog "Auto-setting LaunchOptions in $lc"
         cp "$lc" "$lc.bak" 2>/dev/null || true
