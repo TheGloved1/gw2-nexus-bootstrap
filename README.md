@@ -6,17 +6,18 @@ Single-file, no hardcoded paths, auto-downloads missing components, preserves St
 
 ## Features
 
-* **Portable** - detects `GW2DIR` from script location, no `/home/...` hardcoded.
-* **Auto-download Nexus** - `https://github.com/RaidcoreGG/Nexus/releases/latest/download/d3d11.dll` -> `Guild Wars 2/d3d11.dll`.
-* **Auto-download Tekkit** - `https://www.tekkitsworkshop.net/download?download=1:tw-all-in-one` -> `Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.taco`.
-* **Preserved launch** - `"$@"` keeps `Guild Wars 2/Gw2-64.exe` spaces, logs to `gw2-nexus.log`.
+- **Portable** - detects `GW2DIR` from script location, no `/home/...` hardcoded.
+- **Auto-download Nexus** - `https://github.com/RaidcoreGG/Nexus/releases/latest/download/d3d11.dll` -> `Guild Wars 2/d3d11.dll`.
+- **Auto-download Tekkit** - `https://www.tekkitsworkshop.net/download?download=1:tw-all-in-one` -> `Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.taco`.
+- **Preserved launch** - `"$@"` keeps `Guild Wars 2/Gw2-64.exe` spaces, logs to `gw2-nexus.log`.
 
-## Install
+## Linux Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh
 # verbose logs: curl -fsSL .../install.sh | sh -s -- --verbose
 ```
+
 Auto-searches Steam `libraryfolders.vdf` for `Guild Wars 2/Gw2-64.exe`, prompts for path if not found, downloads `gw2-nexus.sh` to that folder, `chmod +x`, then prints the exact Launch Options to paste:
 
 ```
@@ -24,6 +25,7 @@ Auto-searches Steam `libraryfolders.vdf` for `Guild Wars 2/Gw2-64.exe`, prompts 
 ```
 
 With manual path:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/install.sh | sh -s -- --gw2-dir "/mnt/steamlib/steamapps/common/Guild Wars 2"
 # verbose: sh -s -- --verbose --gw2-dir "/path"
@@ -32,6 +34,46 @@ curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main
 Set that string in **Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options**, launch once.
 
 > **Note:** The auto-installer (`install.sh` `curl | sh`) only supports Guild Wars 2 installed through Steam (it searches `libraryfolders.vdf`). For other launchers (Lutris, Bottles, Heroic, Wine, standalone) use **Manual Install** below - the `gw2-nexus.sh` bootstrap itself works in any install when placed next to `Gw2-64.exe`.
+
+## Windows Install
+
+Command Prompt (Recommended):
+
+```cmd
+powershell -c "irm https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/windows/install.bat -OutFile install.bat" & install.bat
+```
+
+PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/windows/install.bat -OutFile install.bat; .\install.bat
+```
+
+Auto-searches the Steam registry key plus `libraryfolders.vdf` for `Guild Wars 2\Gw2-64.exe` (falls back to common Steam/ArenaNet paths, then prompts for a path), downloads `windows/gw2-nexus.bat` into that folder, runs its checks-only mode, then sets the exact Launch Options to paste:
+
+```
+"C:\path\to\Guild Wars 2\gw2-nexus.bat" %command%
+```
+
+With manual path:
+
+```bat
+install.bat --gw2-dir "C:\Program Files\Guild Wars 2"
+rem verbose: install.bat --verbose --gw2-dir "D:\SteamLibrary\steamapps\common\Guild Wars 2"
+```
+
+The installer asks to close Steam so it can update `localconfig.vdf` (app `1284210`) automatically and restarts Steam afterwards. If you answer `n`, paste the printed string in **Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options** yourself, then launch once.
+
+> **Note:** unlike Linux (Proton `%command%` wrapper), the Windows `.bat` just ensures `d3d11.dll` + `tw_ALL_IN_ONE.taco` are present and then starts `Gw2-64.exe` — no Wine/Proton env vars involved. Standalone ArenaNet installs work too via the common-path search or `--gw2-dir`.
+
+Manual Windows install:
+
+```bat
+powershell -c "irm https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/windows/gw2-nexus.bat -OutFile gw2-nexus.bat"
+copy gw2-nexus.bat "C:\path\to\Guild Wars 2\"
+rem Steam -> Properties -> Launch Options:
+"C:\path\to\Guild Wars 2\gw2-nexus.bat" %command%
+```
 
 ## Manual Install
 
@@ -60,7 +102,7 @@ rm "Guild Wars 2/d3d11.dll" "Guild Wars 2/addons/Taimi/pathing/tw_ALL_IN_ONE.tac
 
 ## Credits
 
-* Guide: HikariKnight Universal-Blue https://universal-blue.discourse.group/t/a-guide-to-addons-for-guild-wars-2-on-linux/8942
-* Nexus: Raidcore https://raidcore.gg/Nexus
-* TaimiHUD: https://taimihud.com
-* Tekkit: https://www.tekkitsworkshop.net/markers/all-in-one-marker-pack
+- Guide: HikariKnight Universal-Blue <https://universal-blue.discourse.group/t/a-guide-to-addons-for-guild-wars-2-on-linux/8942>
+- Nexus: Raidcore <https://raidcore.gg/Nexus>
+- TaimiHUD: <https://taimihud.com>
+- Tekkit: <https://www.tekkitsworkshop.net/markers/all-in-one-marker-pack>
