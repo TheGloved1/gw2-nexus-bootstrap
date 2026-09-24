@@ -4,6 +4,14 @@ Universal, drop-in bootstrap for Guild Wars 2 on Linux (Steam/Proton) with **Rai
 
 Single-file, no hardcoded paths, auto-downloads missing components, preserves Steam `%command%` quoting, logs everything.
 
+<p align="center">
+  <a href="#features">Features</a> ·
+  <a href="#linux-install">Linux Install</a> ·
+  <a href="#windows-install">Windows Install</a> ·
+  <a href="#uninstall">Uninstall</a> ·
+  <a href="#credits">Credits</a>
+</p>
+
 ## Features
 
 - **Portable** - detects `GW2DIR` from script location, no `/home/...` hardcoded.
@@ -33,7 +41,17 @@ curl -fsSL https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main
 
 Set that string in **Steam -> Library -> Guild Wars 2 -> Properties -> Launch Options**, launch once.
 
-> **Note:** The auto-installer (`install.sh` `curl | sh`) only supports Guild Wars 2 installed through Steam (it searches `libraryfolders.vdf`). For other launchers (Lutris, Bottles, Heroic, Wine, standalone) use **Manual Install** below - the `gw2-nexus.sh` bootstrap itself works in any install when placed next to `Gw2-64.exe`.
+> **Note:** The auto-installer (`install.sh` `curl | sh`) only supports Guild Wars 2 installed through Steam (it searches `libraryfolders.vdf`). For other launchers (Lutris, Bottles, Heroic, Wine, standalone) use **Manual Linux install** below - the `gw2-nexus.sh` bootstrap itself works in any install when placed next to `Gw2-64.exe`.
+
+Manual Linux install:
+
+```bash
+wget -O gw2-nexus.sh https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/gw2-nexus.sh
+cp gw2-nexus.sh "/path/to/Guild Wars 2/"
+chmod +x "/path/to/Guild Wars 2/gw2-nexus.sh"
+# Steam -> Properties -> Launch Options:
+"/path/to/Guild Wars 2/gw2-nexus.sh" %command%
+```
 
 ## Windows Install
 
@@ -75,17 +93,7 @@ rem Steam -> Properties -> Launch Options:
 "C:\path\to\Guild Wars 2\gw2-nexus.bat" %command%
 ```
 
-## Manual Install
-
-```bash
-wget -O gw2-nexus.sh https://raw.githubusercontent.com/TheGloved1/gw2-nexus-bootstrap/main/gw2-nexus.sh
-cp gw2-nexus.sh "/path/to/Guild Wars 2/"
-chmod +x "/path/to/Guild Wars 2/gw2-nexus.sh"
-# Steam -> Properties -> Launch Options:
-"/path/to/Guild Wars 2/gw2-nexus.sh" %command%
-```
-
-In-game: open Nexus Library to install `ArcDPS` and `TaimiHUD`, then `TaimiHUD -> Data Sources` and `Pathing` to enable `Tekkit's Guides`.
+In-game setup (both platforms): open Nexus Library to install `ArcDPS` and `TaimiHUD`, then `TaimiHUD -> Data Sources` and `Pathing` to enable `Tekkit's Guides`.
 
 ## Uninstall
 
